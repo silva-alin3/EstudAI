@@ -1,19 +1,9 @@
 name: Build EstudAI APK
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - '**.html'
-      - '**.css'
-      - '**.js'
-      - 'icon.jpg'
-      - 'icon-hq.b64'
-      - 'manifest.json'
-      - 'package.json'
-      - 'capacitor.config.json'
-      - '.github/workflows/build-apk.yml'
   pull_request:
+    branches: [main]
+  push:
     branches: [main]
 permissions:
   contents: write
@@ -23,19 +13,17 @@ concurrency:
 jobs:
   build-android:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 30
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Restore high quality EstudAI icon
+      - name: Rebuild EstudAI v1.7 sources and assets
         run: |
-          python3 - <<'PY'
-          import base64, re
-          raw=open('icon-hq.b64','r',encoding='utf-8').read()
-          clean=''.join(re.findall(r'[A-Za-z0-9+/=]',raw))
-          clean += '=' * ((4-len(clean)%4)%4)
-          open('icon.jpg','wb').write(base64.b64decode(clean,validate=False))
-          PY
+          cat build-src/app.00.js build-src/app.01.js build-src/app.02.js build-src/app.03.js > app.js
+          cat build-src/styles.00.css build-src/styles.01.css build-src/styles.02.css > styles.css
+          cat avatar-parts/00.b64 avatar-parts/01.b64 avatar-parts/02.b64 avatar-parts/03.b64 avatar-parts/04.b64 avatar-parts/05.b64 avatar-parts/06.b64 avatar-parts/07.b64 | tr -d '\n\r ' | base64 -d > avatars.jpg
+          cat icon-parts/00.b64 icon-parts/01.b64 icon-parts/02.b64 | tr -d '\n\r ' | base64 -d > icon.jpg
+          file icon.jpg avatars.jpg
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -53,31 +41,25 @@ jobs:
         run: npx cap add android
       - name: Sync Capacitor
         run: npx cap sync android
-      - name: Apply EstudAI launcher icon
+      - name: Configure Android status bar and launcher icons
         run: |
           python3 -m pip install --quiet pillow
           python3 - <<'PY'
-          from PIL import Image, ImageFile
+          from PIL import Image
           import os, shutil
-          ImageFile.LOAD_TRUNCATED_IMAGES=True
           img=Image.open('icon.jpg').convert('RGB')
           side=max(img.size)
-          square=Image.new('RGB',(side,side),'#073b79')
-          x=(side-img.width)//2; y=(side-img.height)//2
-          square.paste(img,(x,y))
+          sq=Image.new('RGB',(side,side),'#0B67B2')
+          sq.paste(img,((side-img.width)//2,(side-img.height)//2))
           sizes={'mipmap-mdpi':48,'mipmap-hdpi':72,'mipmap-xhdpi':96,'mipmap-xxhdpi':144,'mipmap-xxxhdpi':192}
           for folder,size in sizes.items():
               path=f'android/app/src/main/res/{folder}'
               os.makedirs(path,exist_ok=True)
-              canvas=Image.new('RGB',(size,size),'#073b79')
-              inner=max(1,int(size*.90))
-              art=square.resize((inner,inner),Image.Resampling.LANCZOS)
-              pad=(size-inner)//2
-              canvas.paste(art,(pad,pad))
-              canvas.save(f'{path}/ic_launcher.png')
-              canvas.save(f'{path}/ic_launcher_round.png')
-          for folder in ['android/app/src/main/res/mipmap-anydpi-v26']:
-              if os.path.isdir(folder): shutil.rmtree(folder)
+              art=sq.resize((size,size),Image.Resampling.LANCZOS)
+              art.save(f'{path}/ic_launcher.png')
+              art.save(f'{path}/ic_launcher_round.png')
+          if os.path.isdir('android/app/src/main/res/mipmap-anydpi-v26'):
+              shutil.rmtree('android/app/src/main/res/mipmap-anydpi-v26')
           PY
       - name: Build debug APK
         working-directory: android
@@ -85,18 +67,11 @@ jobs:
           chmod +x gradlew
           ./gradlew assembleDebug
       - name: Rename APK
-        run: cp android/app/build/outputs/apk/debug/app-debug.apk EstudAI.apk
-      - name: Upload workflow artifact
+        run: cp android/app/build/outputs/apk/debug/app-debug.apk EstudAI-v1.7.apk
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: EstudAI-APK
-          path: EstudAI.apk
+          name: EstudAI-v1.7-APK
+          path: EstudAI-v1.7.apk
           if-no-files-found: error
           retention-days: 30
-      - name: Publish downloadable APK release
-        if: github.event_name != 'pull_request'
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh release delete apk-latest --cleanup-tag -y || true
-          gh release create apk-latest EstudAI.apk --target "$GITHUB_SHA" --title "EstudAI Android" --notes "APK instalável do EstudAI para Android."
