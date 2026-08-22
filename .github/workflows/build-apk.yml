@@ -11,12 +11,14 @@ on:
       - 'package.json'
       - 'capacitor.config.json'
       - '.github/workflows/build-apk.yml'
+  pull_request:
+    branches: [main]
 
 permissions:
   contents: write
 
 concurrency:
-  group: estudai-apk
+  group: estudai-apk-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -69,6 +71,7 @@ jobs:
           retention-days: 30
 
       - name: Publish downloadable APK release
+        if: github.event_name != 'pull_request'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
