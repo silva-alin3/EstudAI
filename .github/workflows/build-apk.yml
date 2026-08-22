@@ -28,7 +28,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Restore high quality EstudAI icon
-        run: base64 -d icon-hq.b64 > icon.jpg
+        run: |
+          python3 - <<'PY'
+          import base64, re
+          raw=open('icon-hq.b64','r',encoding='utf-8').read()
+          clean=''.join(re.findall(r'[A-Za-z0-9+/=]',raw))
+          clean += '=' * ((4-len(clean)%4)%4)
+          open('icon.jpg','wb').write(base64.b64decode(clean,validate=False))
+          PY
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
