@@ -36,17 +36,24 @@ jobs:
           java-version: '21'
       - name: Prepare high resolution app assets
         run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y -qq ffmpeg
-          # The HQ source is reconstructed by v20/patch.py as icon-source.webp.
-          # ffmpeg handles WebP sources more robustly than Pillow on Actions runners.
-          ffmpeg -hide_banner -loglevel error -y -i icon-source.webp -frames:v 1 -vf "scale=1024:1024:force_original_aspect_ratio=increase,crop=1024:1024" icon.png
-          # Prof. Caramelo only: crop away the EstudAI text/footer and keep the mascot centered.
-          ffmpeg -hide_banner -loglevel error -y -i icon.png -vf "crop=900:800:62:32,scale=768:768" -q:v 2 prof-caramelo.jpg
+          python3 -m pip install --quiet pillow
           python3 - <<'PY'
           from PIL import Image
-          for p in ['icon.png','prof-caramelo.jpg']:
-              im=Image.open(p); im.verify(); print(p, im.size)
+          icon=Image.open('v20/icon-final.jpg').convert('RGB')
+          icon.save('icon.png', optimize=True)
+          prof=Image.open('v20/prof-caramelo-final.jpg').convert('RGB')
+          prof.save('prof-caramelo.jpg', quality=95, optimize=True)
+          print('icon', icon.size, 'prof', prof.size)
+          PY
+      - name: Set Android package id
+        run: |
+          python3 - <<'PY'
+          import json
+          p='capacitor.config.json'
+          d=json.load(open(p))
+          d['appId']='com.estudai.v20'
+          d['appName']='EstudAI'
+          open(p,'w').write(json.dumps(d,ensure_ascii=False,indent=2))
           PY
       - name: Install dependencies
         run: npm install
@@ -58,7 +65,6 @@ jobs:
         run: npx cap sync android
       - name: Configure launcher icons
         run: |
-          python3 -m pip install --quiet pillow
           python3 - <<'PY'
           from PIL import Image
           import os,shutil
