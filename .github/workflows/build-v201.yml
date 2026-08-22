@@ -22,6 +22,7 @@ jobs:
         run: |
           cat v19/app.00.js v19/app.01.js v19/app.02.js v19/app.03.js > app.js
           cat v19/css.00.css v19/css.01.css v19/css.02.css > styles.css
+          python3 v20/fix_regex.py
           python3 v20/patch.py
           node --check app.js
       - name: Setup Node.js
