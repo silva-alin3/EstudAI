@@ -2,14 +2,5 @@
   "appId": "com.estudai.enem",
   "appName": "EstudAI",
   "webDir": "dist",
-  "server": {
-    "androidScheme": "https"
-  },
-  "plugins": {
-    "StatusBar": {
-      "overlaysWebView": false,
-      "backgroundColor": "#0b7a3b",
-      "style": "DARK"
-    }
-  }
+  "server": {"androidScheme": "https"}
 }

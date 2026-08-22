@@ -4,7 +4,7 @@
   "start_url":"/",
   "display":"standalone",
   "background_color":"#f4f8f5",
-  "theme_color":"#0b7a3b",
+  "theme_color":"#087a3c",
   "description":"Plataforma gamificada de preparação para o ENEM",
-  "icons":[]
+  "icons":[{"src":"/icon.jpg","sizes":"128x128","type":"image/jpeg","purpose":"any maskable"}]
 }

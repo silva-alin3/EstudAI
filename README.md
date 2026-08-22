@@ -1,39 +1,23 @@
 # EstudAI 🇧🇷
 
-Aplicativo gamificado de preparação para o ENEM, inspirado em mecânicas de aprendizagem diária e com identidade visual brasileira.
+Aplicativo gamificado de preparação para o ENEM com identidade brasileira.
 
-## Funcionalidades
+## Destaques
+- Home e Trilha com funções diferentes
+- Simulados personalizados de 5 a 50 questões
+- Correção imediata com resposta certa e explicação
+- Redação com nota estimada por competência, pontos fortes, melhorias e próximo passo
+- Temas oficiais de redação do ENEM de 1998 a 2025
+- Lista de possíveis temas para treino
+- Histórico, XP, rascunhos e progresso persistidos localmente no aparelho
+- Perfil com resumo de evolução
+- PWA e APK Android
 
-- Dashboard com XP, sequência, corações e meta diária
-- Trilhas por Linguagens, Humanas, Natureza, Matemática e Redação
-- Banco inicial de questões com explicação imediata
-- Simulados por área e quantidade
-- Histórico de desempenho
-- Catálogo de provas anteriores do ENEM de 2009 a 2025 com acesso ao INEP
-- Resumos rápidos por área
-- Laboratório de redação com temas sugeridos e sorteio
-- Aulas de redação e checklist das 5 competências
-- Avaliação local estimada da redação
-- Perfil, conquistas e Liga Brasil
-- Persistência local com `localStorage`
-- PWA instalável e cache offline
+## Persistência
+Os dados são gravados em `localStorage` e permanecem ao fechar/reabrir o app e reiniciar o celular. Desinstalar o aplicativo ou limpar os dados do app pode apagar o histórico. Para sincronização entre aparelhos e recuperação após reinstalação, será necessário adicionar conta/login e backend.
 
-## Rodar localmente
-
+## Desenvolvimento
 ```bash
 npm install
 npm run dev
 ```
-
-Abra o endereço mostrado pelo Vite no navegador.
-
-## Build de produção
-
-```bash
-npm run build
-npm run preview
-```
-
-## Observações importantes
-
-O app já roda sem backend. O banco interno contém uma base inicial de questões para demonstrar toda a experiência de estudo. O catálogo de provas anteriores direciona para a página oficial do INEP. Para uma operação em produção com milhares de questões oficiais, contas sincronizadas e correção por IA real, conecte um banco de dados e uma API de IA no backend.
