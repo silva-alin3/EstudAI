@@ -1,0 +1,49 @@
+export const questions=[
+{id:1,area:'Humanas',topic:'História',q:'Durante a Guerra Fria, qual organização militar representava principalmente o bloco capitalista ocidental?',a:['Pacto de Varsóvia','OTAN','Comecon','ONU','Mercosul'],c:1,e:'A OTAN foi criada em 1949 e reuniu países do bloco ocidental. O Pacto de Varsóvia representava o bloco socialista.'},
+{id:2,area:'Humanas',topic:'Geografia',q:'O processo de urbanização brasileira no século XX esteve fortemente associado a:',a:['redução do setor industrial','êxodo rural e industrialização','retorno populacional ao campo','fim das metrópoles','queda da migração interna'],c:1,e:'A industrialização concentrou empregos nas cidades e acelerou o êxodo rural.'},
+{id:3,area:'Linguagens',topic:'Português',q:'Em um texto argumentativo, a função principal de uma tese é:',a:['apresentar a posição central defendida','listar referências bibliográficas','substituir a conclusão','criar apenas humor','resumir dados estatísticos'],c:0,e:'A tese organiza a posição que será sustentada pelos argumentos ao longo do texto.'},
+{id:4,area:'Natureza',topic:'Biologia',q:'A fotossíntese permite que organismos autotróficos:',a:['convertam energia luminosa em energia química','produzam apenas gás carbônico','eliminem toda água do ambiente','realizem somente respiração anaeróbica','transformem proteínas em luz'],c:0,e:'Na fotossíntese, a energia luminosa é armazenada em moléculas orgânicas.'},
+{id:5,area:'Matemática',topic:'Porcentagem',q:'Um produto de R$ 200 recebe desconto de 15%. Qual o preço final?',a:['R$ 150','R$ 160','R$ 170','R$ 175','R$ 185'],c:2,e:'15% de 200 = 30. Logo, 200 - 30 = 170.'},
+{id:6,area:'Natureza',topic:'Química',q:'Uma solução com pH 3 é classificada como:',a:['básica','neutra','ácida','salina','radioativa'],c:2,e:'Valores de pH menores que 7 indicam meio ácido.'},
+{id:7,area:'Humanas',topic:'Filosofia',q:'Para Sócrates, o diálogo filosófico tinha como objetivo principal:',a:['impor respostas prontas','estimular o exame crítico das ideias','eliminar perguntas','defender apenas mitos','evitar contradições sem discuti-las'],c:1,e:'A maiêutica socrática usa perguntas para investigar conceitos e revelar inconsistências.'},
+{id:8,area:'Matemática',topic:'Razão',q:'Se 3 cadernos custam R$ 27, mantendo o mesmo preço unitário, 5 cadernos custam:',a:['R$ 35','R$ 40','R$ 45','R$ 50','R$ 55'],c:2,e:'Cada caderno custa 27/3 = 9. Cinco custam 45.'},
+{id:9,area:'Linguagens',topic:'Literatura',q:'Uma característica marcante do Modernismo brasileiro de 1922 foi:',a:['rigidez absoluta às formas clássicas','busca por linguagem mais livre e identidade nacional','rejeição de temas brasileiros','retorno exclusivo ao latim','proibição de experimentação estética'],c:1,e:'O Modernismo valorizou ruptura estética, linguagem cotidiana e temas brasileiros.'},
+{id:10,area:'Natureza',topic:'Física',q:'Se a velocidade média é 20 m/s durante 5 s, a distância percorrida é:',a:['4 m','25 m','50 m','100 m','200 m'],c:3,e:'d = v·t = 20·5 = 100 m.'},
+{id:11,area:'Humanas',topic:'Sociologia',q:'O conceito de cidadania envolve principalmente:',a:['apenas deveres militares','direitos e deveres na vida social e política','somente pagamento de impostos','isolamento político','ausência de participação social'],c:1,e:'Cidadania envolve participação, direitos civis, políticos e sociais, além de deveres.'},
+{id:12,area:'Matemática',topic:'Estatística',q:'A média aritmética dos valores 4, 6, 8 e 10 é:',a:['6','7','8','9','10'],c:1,e:'(4+6+8+10)/4 = 28/4 = 7.'},
+{id:13,area:'Natureza',topic:'Ecologia',q:'Em uma cadeia alimentar, os produtores ocupam:',a:['o primeiro nível trófico','sempre o último nível','apenas níveis intermediários','nenhum nível trófico','somente ambientes aquáticos'],c:0,e:'Produtores formam matéria orgânica e sustentam os demais níveis.'},
+{id:14,area:'Linguagens',topic:'Interpretação',q:'Quando um texto usa ironia, o leitor deve considerar:',a:['apenas o sentido literal','a possibilidade de contraste entre o que é dito e o que se pretende comunicar','que todo texto é científico','que não existe contexto','somente a pontuação'],c:1,e:'A ironia costuma depender do contraste entre sentido literal e intenção comunicativa.'},
+{id:15,area:'Humanas',topic:'Brasil República',q:'O chamado voto de cabresto esteve ligado principalmente:',a:['à democracia digital','ao coronelismo na Primeira República','ao Estado Novo exclusivamente','à Constituição de 1988','ao parlamentarismo imperial'],c:1,e:'O voto de cabresto era uma prática de controle eleitoral associada ao coronelismo.'},
+{id:16,area:'Matemática',topic:'Geometria',q:'A área de um retângulo de 8 cm por 5 cm é:',a:['13 cm²','26 cm²','40 cm²','80 cm²','20 cm²'],c:2,e:'Área = base × altura = 8 × 5 = 40 cm².'},
+{id:17,area:'Natureza',topic:'Genética',q:'O DNA é responsável principalmente por:',a:['armazenar informação genética','transportar oxigênio','digerir lipídios','formar apenas ossos','produzir luz'],c:0,e:'O DNA armazena e transmite informação genética.'},
+{id:18,area:'Linguagens',topic:'Gramática',q:'Em “Os estudantes chegaram cedo”, o sujeito é:',a:['oculto','indeterminado','Os estudantes','cedo','chegaram'],c:2,e:'“Os estudantes” é o termo que pratica a ação expressa pelo verbo.'},
+{id:19,area:'Humanas',topic:'Geopolítica',q:'Globalização pode ser entendida como:',a:['redução total das trocas internacionais','ampliação das conexões econômicas, culturais e informacionais entre regiões','fim das tecnologias de comunicação','isolamento das economias','desaparecimento das empresas transnacionais'],c:1,e:'A globalização intensifica fluxos de mercadorias, capitais, informação e cultura.'},
+{id:20,area:'Matemática',topic:'Probabilidade',q:'Ao lançar uma moeda equilibrada, a probabilidade de sair cara é:',a:['0%','25%','50%','75%','100%'],c:2,e:'Há dois resultados equiprováveis; um deles é cara, então 1/2 = 50%.'}
+];
+
+export const summaries=[
+['Matemática','Porcentagem e juros','Transforme percentuais em frações ou decimais. Em aumentos/descontos sucessivos, aplique os fatores multiplicativos em sequência.'],
+['Matemática','Funções','Observe domínio, imagem, crescimento, decrescimento e interpretação gráfica. Funções afins aparecem muito em situações de tarifa e variação linear.'],
+['Natureza','Ecologia','Revise cadeias alimentares, ciclos biogeoquímicos, relações ecológicas, sucessão e impactos ambientais.'],
+['Natureza','Eletricidade','Domine tensão, corrente, resistência, potência e energia elétrica. Em circuitos simples, use U = R·i e P = U·i.'],
+['Humanas','Brasil República','Priorize Primeira República, Era Vargas, Ditadura Militar, redemocratização e Constituição de 1988.'],
+['Humanas','Geopolítica','Conecte Guerra Fria, globalização, blocos econômicos, migrações, conflitos e recursos estratégicos.'],
+['Linguagens','Interpretação textual','Identifique tese, finalidade, público, estratégia argumentativa, ironia, intertextualidade e efeitos de sentido.'],
+['Linguagens','Modernismo','Revise Semana de 22, ruptura estética, nacionalismo crítico, linguagem coloquial e principais autores.'],
+['Redação','Estrutura ENEM','Introdução com tese, dois desenvolvimentos argumentativos e conclusão com proposta de intervenção completa.'],
+['Redação','Repertório sociocultural','Use repertório pertinente, produtivo e articulado ao argumento; evite citações decoradas sem conexão.']
+];
+
+export const essayThemes=[
+'Desafios para combater a desinformação no Brasil','Caminhos para ampliar a educação financeira entre jovens brasileiros','Os impactos da inteligência artificial na formação educacional','Desafios para a valorização do trabalho de cuidado no Brasil','Medidas para reduzir o desperdício de alimentos no país','Obstáculos à inclusão digital de populações vulneráveis','O papel da escola no enfrentamento ao bullying e ao cyberbullying','Desafios para garantir mobilidade urbana sustentável','Caminhos para a preservação da saúde mental de adolescentes','A importância da valorização da cultura indígena no Brasil','Combate ao racismo ambiental nas cidades brasileiras','Desafios da reinserção social de pessoas egressas do sistema prisional','O impacto das apostas online na sociedade brasileira','Caminhos para reduzir a evasão escolar no ensino médio','Desafios para proteger crianças e adolescentes no ambiente digital'
+];
+
+export const essayLessons=[
+['1. Entenda as 5 competências','Competência 1: norma-padrão; 2: compreensão do tema e repertório; 3: seleção e organização de argumentos; 4: coesão; 5: proposta de intervenção.'],
+['2. Introdução que funciona','Contextualize sem enrolar, apresente o recorte do problema e finalize com uma tese clara que antecipe os eixos argumentativos.'],
+['3. Desenvolvimento','Cada parágrafo deve ter tópico frasal, explicação, repertório ou evidência e conexão explícita com a tese.'],
+['4. Conclusão nota alta','Inclua agente, ação, meio/modo, finalidade e detalhamento, respeitando os direitos humanos.'],
+['5. Repertório produtivo','Prefira Constituição, dados públicos, fatos históricos, obras e conceitos que você saiba explicar e conectar ao tema.']
+];
+
+export const exams=Array.from({length:17},(_,i)=>{const year=2009+i;return {year,label:`ENEM ${year}`,days:2,status:'Catálogo oficial',url:'https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos'}}).reverse();
