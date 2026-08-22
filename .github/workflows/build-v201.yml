@@ -32,19 +32,23 @@ jobs:
         run: |
           python3 -m pip install --quiet pillow
           python3 - <<'PY'
-          import base64, pathlib
-          from PIL import Image, ImageOps
-          raw=''.join(pathlib.Path('v20/icon384.b64').read_text().split())
-          pathlib.Path('icon-source.jpg').write_bytes(base64.b64decode(raw, validate=True))
-          icon=Image.open('icon-source.jpg').convert('RGB')
-          icon.load()
-          print('decoded icon:', icon.size)
-          icon.save('icon.png', optimize=True)
-          # Tutor portrait: crop the mascot region so the EstudAI wordmark is not shown.
-          w,h=icon.size
-          prof=icon.crop((int(w*.08), int(h*.04), int(w*.92), int(h*.73)))
-          prof=ImageOps.fit(prof,(384,384),method=Image.Resampling.LANCZOS,centering=(.5,.42))
-          prof.save('prof-caramelo.jpg',quality=92,optimize=True)
+          from PIL import Image, ImageOps, ImageFilter, ImageEnhance, ImageFile
+          ImageFile.LOAD_TRUNCATED_IMAGES=True
+          src=Image.open('icon.jpg').convert('RGB')
+          # Remove edge/border area and rebuild a clean square launcher asset.
+          w,h=src.size
+          pad=max(0,int(min(w,h)*.015))
+          src=src.crop((pad,pad,w-pad,h-pad))
+          icon=ImageOps.fit(src,(768,768),method=Image.Resampling.LANCZOS,centering=(.5,.48))
+          icon=ImageEnhance.Sharpness(icon).enhance(1.25)
+          icon.save('icon.png',optimize=True)
+          # Prof. Caramelo portrait only, without the EstudAI wordmark.
+          w,h=src.size
+          prof=src.crop((int(w*.08),int(h*.03),int(w*.92),int(h*.72)))
+          prof=ImageOps.fit(prof,(512,512),method=Image.Resampling.LANCZOS,centering=(.5,.42))
+          prof=ImageEnhance.Sharpness(prof).enhance(1.2)
+          prof.save('prof-caramelo.jpg',quality=94,optimize=True)
+          print('source',src.size,'launcher',icon.size,'prof',prof.size)
           PY
       - name: Set Android package id
         run: |
