@@ -1,9 +1,10 @@
 {
-  "name": "EstudAI",
-  "short_name": "EstudAI",
-  "start_url": "./index.html",
-  "display": "standalone",
-  "background_color": "#F7FBF8",
-  "theme_color": "#0B7A3B",
-  "icons": []
+  "name":"EstudAI — ENEM",
+  "short_name":"EstudAI",
+  "start_url":"/",
+  "display":"standalone",
+  "background_color":"#f4f8f5",
+  "theme_color":"#0b7a3b",
+  "description":"Plataforma gamificada de preparação para o ENEM",
+  "icons":[]
 }
