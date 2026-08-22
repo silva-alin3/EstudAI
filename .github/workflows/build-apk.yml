@@ -13,12 +13,16 @@ on:
       - '.github/workflows/build-apk.yml'
 
 permissions:
-  contents: read
+  contents: write
+
+concurrency:
+  group: estudai-apk
+  cancel-in-progress: true
 
 jobs:
   build-android:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
 
     steps:
       - name: Checkout
@@ -56,10 +60,17 @@ jobs:
       - name: Rename APK
         run: cp android/app/build/outputs/apk/debug/app-debug.apk EstudAI.apk
 
-      - name: Upload APK
+      - name: Upload workflow artifact
         uses: actions/upload-artifact@v4
         with:
           name: EstudAI-APK
           path: EstudAI.apk
           if-no-files-found: error
           retention-days: 30
+
+      - name: Publish downloadable APK release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release delete apk-latest --cleanup-tag -y || true
+          gh release create apk-latest EstudAI.apk --target "$GITHUB_SHA" --title "EstudAI Android" --notes "APK instalável do EstudAI para Android."
