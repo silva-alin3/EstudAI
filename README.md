@@ -1,36 +1,39 @@
 # EstudAI 🇧🇷
 
-Plataforma de estudos para o ENEM com identidade visual brasileira, gamificação e recursos de apoio por IA.
+Aplicativo gamificado de preparação para o ENEM, inspirado em mecânicas de aprendizagem diária e com identidade visual brasileira.
 
-## Funcionalidades atuais
-- Home gamificada com XP, sequência e metas
-- Trilha de estudos por áreas do ENEM
-- Simulados interativos com cronômetro, eliminação de alternativas, correção e explicação
-- Catálogo visual de provas anteriores do ENEM de 2009 a 2025
-- Área de redação com temas, sorteio, editor e avaliação demonstrativa pelas 5 competências
-- Biblioteca de resumos
-- Perfil com métricas e evolução
-- Layout responsivo para celular e desktop
-- Estrutura PWA-ready
+## Funcionalidades
 
-## Identidade visual
-A interface usa uma paleta inspirada no Brasil:
-- Verde: `#0B7A3B`
-- Amarelo: `#FFCB2F`
-- Azul: `#005CA9`
-- Branco: `#FFFFFF`
+- Dashboard com XP, sequência, corações e meta diária
+- Trilhas por Linguagens, Humanas, Natureza, Matemática e Redação
+- Banco inicial de questões com explicação imediata
+- Simulados por área e quantidade
+- Histórico de desempenho
+- Catálogo de provas anteriores do ENEM de 2009 a 2025 com acesso ao INEP
+- Resumos rápidos por área
+- Laboratório de redação com temas sugeridos e sorteio
+- Aulas de redação e checklist das 5 competências
+- Avaliação local estimada da redação
+- Perfil, conquistas e Liga Brasil
+- Persistência local com `localStorage`
+- PWA instalável e cache offline
 
 ## Rodar localmente
-Abra `index.html` no navegador ou sirva a pasta com um servidor estático.
 
-## Próximas etapas planejadas
-- Login e cadastro
-- Banco de dados real de questões e gabaritos do ENEM
-- Histórico de simulados por usuário
-- Correção de redação por IA
-- Plano de estudos personalizado
-- Ranking, ligas, conquistas e sistema de XP persistente
-- Painel de desempenho por assunto
-- Publicação contínua na Vercel
+```bash
+npm install
+npm run dev
+```
 
-> A versão atual é um protótipo funcional de front-end. Algumas informações e análises ainda são demonstrativas até a integração com backend, banco de dados e IA.
+Abra o endereço mostrado pelo Vite no navegador.
+
+## Build de produção
+
+```bash
+npm run build
+npm run preview
+```
+
+## Observações importantes
+
+O app já roda sem backend. O banco interno contém uma base inicial de questões para demonstrar toda a experiência de estudo. O catálogo de provas anteriores direciona para a página oficial do INEP. Para uma operação em produção com milhares de questões oficiais, contas sincronizadas e correção por IA real, conecte um banco de dados e uma API de IA no backend.
