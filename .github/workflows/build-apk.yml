@@ -21,8 +21,16 @@ jobs:
         run: |
           cat build-src/app.00.js build-src/app.01.js build-src/app.02.js build-src/app.03.js > app.js
           cat build-src/styles.00.css build-src/styles.01.css build-src/styles.02.css > styles.css
-          cat avatar-parts/00.b64 avatar-parts/01.b64 avatar-parts/02.b64 avatar-parts/03.b64 avatar-parts/04.b64 avatar-parts/05.b64 avatar-parts/06.b64 avatar-parts/07.b64 | tr -d '\n\r ' | base64 -d > avatars.jpg
-          cat icon-parts/00.b64 icon-parts/01.b64 icon-parts/02.b64 | tr -d '\n\r ' | base64 -d > icon.jpg
+          python3 - <<'PY'
+          import base64,re,pathlib
+          def rebuild(parts,out):
+              raw=''.join(pathlib.Path(p).read_text(encoding='utf-8') for p in parts)
+              clean=''.join(re.findall(r'[A-Za-z0-9+/=]',raw))
+              clean += '='*((4-len(clean)%4)%4)
+              pathlib.Path(out).write_bytes(base64.b64decode(clean,validate=False))
+          rebuild([f'avatar-parts/{i:02d}.b64' for i in range(8)],'avatars.jpg')
+          rebuild([f'icon-parts/{i:02d}.b64' for i in range(3)],'icon.jpg')
+          PY
           file icon.jpg avatars.jpg
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -45,8 +53,9 @@ jobs:
         run: |
           python3 -m pip install --quiet pillow
           python3 - <<'PY'
-          from PIL import Image
-          import os, shutil
+          from PIL import Image,ImageFile
+          import os,shutil
+          ImageFile.LOAD_TRUNCATED_IMAGES=True
           img=Image.open('icon.jpg').convert('RGB')
           side=max(img.size)
           sq=Image.new('RGB',(side,side),'#0B67B2')
