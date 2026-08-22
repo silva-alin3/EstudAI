@@ -1,0 +1,9 @@
+{
+  "name": "EstudAI",
+  "short_name": "EstudAI",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#F7FBF8",
+  "theme_color": "#0B7A3B",
+  "icons": []
+}
