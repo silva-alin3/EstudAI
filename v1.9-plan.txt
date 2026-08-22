@@ -1,0 +1,1 @@
+EstudAI v1.9: avatars HD, simulados multi-área, banco ENEM paginado, desempenho redesenhado, Prof. Caramelo aprimorado e correções do diagnóstico.
