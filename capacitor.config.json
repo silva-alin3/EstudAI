@@ -1,5 +1,5 @@
 {
-  "appId": "com.estudai.enem",
+  "appId": "com.estudai.app",
   "appName": "EstudAI",
   "webDir": "dist",
   "server": {"androidScheme": "https"}
