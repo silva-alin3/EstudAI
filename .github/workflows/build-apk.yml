@@ -47,16 +47,28 @@ jobs:
         run: |
           python3 -m pip install --quiet pillow
           python3 - <<'PY'
-          from PIL import Image
-          import os
-          img=Image.open('icon.jpg').convert('RGBA')
+          from PIL import Image, ImageOps
+          import os, shutil
+          img=Image.open('icon.jpg').convert('RGB')
+          # Keep the complete artwork visible and avoid Android adaptive-icon zoom/crop.
+          side=max(img.size)
+          square=Image.new('RGB',(side,side),'#073b79')
+          x=(side-img.width)//2; y=(side-img.height)//2
+          square.paste(img,(x,y))
           sizes={'mipmap-mdpi':48,'mipmap-hdpi':72,'mipmap-xhdpi':96,'mipmap-xxhdpi':144,'mipmap-xxxhdpi':192}
           for folder,size in sizes.items():
               path=f'android/app/src/main/res/{folder}'
               os.makedirs(path,exist_ok=True)
-              out=img.resize((size,size),Image.Resampling.LANCZOS)
-              for name in ['ic_launcher.png','ic_launcher_round.png','ic_launcher_foreground.png']:
-                  out.save(f'{path}/{name}')
+              canvas=Image.new('RGB',(size,size),'#073b79')
+              inner=max(1,int(size*.90))
+              art=square.resize((inner,inner),Image.Resampling.LANCZOS)
+              pad=(size-inner)//2
+              canvas.paste(art,(pad,pad))
+              canvas.save(f'{path}/ic_launcher.png',quality=95)
+              canvas.save(f'{path}/ic_launcher_round.png',quality=95)
+          # Force Android to use the raster icon instead of a foreground layer that crops the artwork.
+          for folder in ['android/app/src/main/res/mipmap-anydpi-v26']:
+              if os.path.isdir(folder): shutil.rmtree(folder)
           PY
       - name: Build debug APK
         working-directory: android
