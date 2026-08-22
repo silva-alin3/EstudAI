@@ -57,8 +57,9 @@ jobs:
         run: |
           python3 -m pip install --quiet pillow
           python3 - <<'PY'
-          from PIL import Image
+          from PIL import Image, ImageFile
           import os, shutil
+          ImageFile.LOAD_TRUNCATED_IMAGES=True
           img=Image.open('icon.jpg').convert('RGB')
           side=max(img.size)
           square=Image.new('RGB',(side,side),'#073b79')
@@ -73,8 +74,8 @@ jobs:
               art=square.resize((inner,inner),Image.Resampling.LANCZOS)
               pad=(size-inner)//2
               canvas.paste(art,(pad,pad))
-              canvas.save(f'{path}/ic_launcher.png',quality=95)
-              canvas.save(f'{path}/ic_launcher_round.png',quality=95)
+              canvas.save(f'{path}/ic_launcher.png')
+              canvas.save(f'{path}/ic_launcher_round.png')
           for folder in ['android/app/src/main/res/mipmap-anydpi-v26']:
               if os.path.isdir(folder): shutil.rmtree(folder)
           PY
