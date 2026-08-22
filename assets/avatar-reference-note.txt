@@ -1,0 +1,1 @@
+Avatar reference replaced in v2 using the user-provided 12-avatar style direction. The production UI renders polished avatar portraits via CSS/SVG so selection works offline in the APK.
