@@ -6,6 +6,8 @@ on:
       - '.github/workflows/build-v201.yml'
       - 'v20/**'
       - 'v19/**'
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 permissions:
   contents: read
