@@ -36,21 +36,17 @@ jobs:
           java-version: '21'
       - name: Prepare high resolution app assets
         run: |
-          python3 -m pip install --quiet pillow numpy
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg
+          # The HQ source is reconstructed by v20/patch.py as icon-source.webp.
+          # ffmpeg handles WebP sources more robustly than Pillow on Actions runners.
+          ffmpeg -hide_banner -loglevel error -y -i icon-source.webp -frames:v 1 -vf "scale=1024:1024:force_original_aspect_ratio=increase,crop=1024:1024" icon.png
+          # Prof. Caramelo only: crop away the EstudAI text/footer and keep the mascot centered.
+          ffmpeg -hide_banner -loglevel error -y -i icon.png -vf "crop=900:800:62:32,scale=768:768" -q:v 2 prof-caramelo.jpg
           python3 - <<'PY'
           from PIL import Image
-          import numpy as np
-          src=Image.open('icon-source.webp').convert('RGBA').resize((1024,1024),Image.Resampling.LANCZOS)
-          a=np.array(src)
-          h,w=a.shape[:2]
-          yy,xx=np.ogrid[:h,:w]
-          corner=((xx<170)&(yy<170))|((xx>w-170)&(yy<170))|((xx<170)&(yy>h-170))|((xx>w-170)&(yy>h-170))
-          dark=a[:,:,:3].max(axis=2)<32
-          a[corner&dark,3]=0
-          icon=Image.fromarray(a)
-          icon.save('icon.png',optimize=True)
-          prof=src.convert('RGB').crop((90,15,934,859)).resize((768,768),Image.Resampling.LANCZOS)
-          prof.save('prof-caramelo.jpg',quality=97,optimize=True)
+          for p in ['icon.png','prof-caramelo.jpg']:
+              im=Image.open(p); im.verify(); print(p, im.size)
           PY
       - name: Install dependencies
         run: npm install
@@ -62,6 +58,7 @@ jobs:
         run: npx cap sync android
       - name: Configure launcher icons
         run: |
+          python3 -m pip install --quiet pillow
           python3 - <<'PY'
           from PIL import Image
           import os,shutil
