@@ -1,0 +1,89 @@
+name: Build EstudAI v2.0 Stable APK
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/build-v201.yml'
+      - 'v20/**'
+      - 'v19/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build-android:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Assemble source
+        run: |
+          cat v19/app.00.js v19/app.01.js v19/app.02.js v19/app.03.js > app.js
+          cat v19/css.00.css v19/css.01.css v19/css.02.css > styles.css
+          python3 v20/patch.py
+          node --check app.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Prepare high resolution app assets
+        run: |
+          python3 -m pip install --quiet pillow numpy
+          python3 - <<'PY'
+          from PIL import Image
+          import numpy as np
+          src=Image.open('icon-source.webp').convert('RGBA').resize((1024,1024),Image.Resampling.LANCZOS)
+          a=np.array(src)
+          h,w=a.shape[:2]
+          yy,xx=np.ogrid[:h,:w]
+          corner=((xx<170)&(yy<170))|((xx>w-170)&(yy<170))|((xx<170)&(yy>h-170))|((xx>w-170)&(yy>h-170))
+          dark=a[:,:,:3].max(axis=2)<32
+          a[corner&dark,3]=0
+          icon=Image.fromarray(a)
+          icon.save('icon.png',optimize=True)
+          prof=src.convert('RGB').crop((90,15,934,859)).resize((768,768),Image.Resampling.LANCZOS)
+          prof.save('prof-caramelo.jpg',quality=97,optimize=True)
+          PY
+      - name: Install dependencies
+        run: npm install
+      - name: Build web app
+        run: npm run build
+      - name: Create Android project
+        run: npx cap add android
+      - name: Sync Capacitor
+        run: npx cap sync android
+      - name: Configure launcher icons
+        run: |
+          python3 - <<'PY'
+          from PIL import Image
+          import os,shutil
+          img=Image.open('icon.png').convert('RGBA')
+          sizes={'mipmap-mdpi':48,'mipmap-hdpi':72,'mipmap-xhdpi':96,'mipmap-xxhdpi':144,'mipmap-xxxhdpi':192}
+          for folder,size in sizes.items():
+              path=f'android/app/src/main/res/{folder}'
+              os.makedirs(path,exist_ok=True)
+              art=img.resize((size,size),Image.Resampling.LANCZOS)
+              art.save(f'{path}/ic_launcher.png')
+              art.save(f'{path}/ic_launcher_round.png')
+          p='android/app/src/main/res/mipmap-anydpi-v26'
+          if os.path.isdir(p): shutil.rmtree(p)
+          PY
+      - name: Build APK
+        working-directory: android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleDebug
+      - name: Package APK
+        run: cp android/app/build/outputs/apk/debug/app-debug.apk EstudAI-v2.0.apk
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: EstudAI-v2.0-APK
+          path: EstudAI-v2.0.apk
+          if-no-files-found: error
+          retention-days: 30
