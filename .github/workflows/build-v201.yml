@@ -1,11 +1,5 @@
 name: Build EstudAI v2.0 Stable APK
 on:
-  push:
-    branches: [main]
-    paths:
-      - '.github/workflows/build-v201.yml'
-      - 'v20/**'
-      - 'v19/**'
   pull_request:
     branches: [main]
   workflow_dispatch:
@@ -34,16 +28,23 @@ jobs:
         with:
           distribution: temurin
           java-version: '21'
-      - name: Prepare high resolution app assets
+      - name: Prepare EstudAI icon and Prof Caramelo
         run: |
           python3 -m pip install --quiet pillow
           python3 - <<'PY'
-          from PIL import Image
-          icon=Image.open('v20/icon-final.jpg').convert('RGB')
+          import base64, pathlib
+          from PIL import Image, ImageOps
+          raw=''.join(pathlib.Path('v20/icon384.b64').read_text().split())
+          pathlib.Path('icon-source.jpg').write_bytes(base64.b64decode(raw, validate=True))
+          icon=Image.open('icon-source.jpg').convert('RGB')
+          icon.load()
+          print('decoded icon:', icon.size)
           icon.save('icon.png', optimize=True)
-          prof=Image.open('v20/prof-caramelo-final.jpg').convert('RGB')
-          prof.save('prof-caramelo.jpg', quality=95, optimize=True)
-          print('icon', icon.size, 'prof', prof.size)
+          # Tutor portrait: crop the mascot region so the EstudAI wordmark is not shown.
+          w,h=icon.size
+          prof=icon.crop((int(w*.08), int(h*.04), int(w*.92), int(h*.73)))
+          prof=ImageOps.fit(prof,(384,384),method=Image.Resampling.LANCZOS,centering=(.5,.42))
+          prof.save('prof-caramelo.jpg',quality=92,optimize=True)
           PY
       - name: Set Android package id
         run: |
@@ -93,4 +94,3 @@ jobs:
           path: EstudAI-v2.0.apk
           if-no-files-found: error
           retention-days: 30
-# hq-assets-attached
