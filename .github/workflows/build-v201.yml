@@ -32,20 +32,23 @@ jobs:
         run: |
           python3 -m pip install --quiet pillow
           python3 - <<'PY'
+          import base64,pathlib,re
           from PIL import Image, ImageOps, ImageFilter
-          src=Image.open('v20/icon-clean-source.jpg').convert('RGB')
+          raw=pathlib.Path('v20/icon512clean.b64').read_text(encoding='utf-8')
+          clean=''.join(re.findall(r'[A-Za-z0-9+/=]',raw))
+          clean += '='*((4-len(clean)%4)%4)
+          pathlib.Path('icon-source.jpg').write_bytes(base64.b64decode(clean,validate=False))
+          src=Image.open('icon-source.jpg').convert('RGB')
           src.load()
-          # Source is already borderless. Rebuild a crisp launcher image without extra masks/borders.
           icon=ImageOps.fit(src,(1024,1024),method=Image.Resampling.LANCZOS,centering=(.5,.5))
           icon=icon.filter(ImageFilter.UnsharpMask(radius=1.0,percent=110,threshold=2))
           icon.save('icon.png',optimize=True)
-          # Prof. Caramelo portrait without the EstudAI wordmark.
           w,h=src.size
           prof=src.crop((int(w*.11),int(h*.02),int(w*.89),int(h*.72)))
           prof=ImageOps.fit(prof,(768,768),method=Image.Resampling.LANCZOS,centering=(.5,.42))
           prof=prof.filter(ImageFilter.UnsharpMask(radius=1.0,percent=105,threshold=2))
           prof.save('prof-caramelo.jpg',quality=96,subsampling=0,optimize=True)
-          print('launcher',icon.size,'prof',prof.size)
+          print('verified source',src.size,'launcher',icon.size,'prof',prof.size)
           PY
       - name: Set Android package id
         run: |
