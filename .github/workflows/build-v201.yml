@@ -29,27 +29,20 @@ jobs:
         with:
           distribution: temurin
           java-version: '21'
-      - name: Prepare high-resolution EstudAI icon and Prof Caramelo
+      - name: Prepare temporary app artwork
         run: |
           python3 -m pip install --quiet pillow
           python3 - <<'PY'
-          from PIL import Image, ImageOps, ImageFilter
-          src=Image.open('icon-source.webp').convert('RGB')
-          src.load()
-          w,h=src.size
-          # Crop inside the rounded source artwork so the Android launcher mask receives a full-bleed image with no black corners.
-          x1,y1=int(w*.08),int(h*.08)
-          x2,y2=int(w*.92),int(h*.92)
-          full=src.crop((x1,y1,x2,y2))
-          icon=ImageOps.fit(full,(1024,1024),method=Image.Resampling.LANCZOS,centering=(.5,.5))
-          icon=icon.filter(ImageFilter.UnsharpMask(radius=.8,percent=120,threshold=1))
+          import base64,pathlib,re
+          from PIL import Image, ImageOps
+          raw=pathlib.Path('v20/icon144.b64').read_text(encoding='utf-8')
+          clean=''.join(re.findall(r'[A-Za-z0-9+/=]',raw)); clean += '='*((4-len(clean)%4)%4)
+          pathlib.Path('icon-source.jpg').write_bytes(base64.b64decode(clean,validate=False))
+          src=Image.open('icon-source.jpg').convert('RGB')
+          icon=ImageOps.fit(src,(1024,1024),method=Image.Resampling.LANCZOS)
           icon.save('icon.png',optimize=True)
-          # Separate Prof. Caramelo portrait, without the EstudAI wordmark.
-          prof=src.crop((int(w*.10),int(h*.01),int(w*.90),int(h*.69)))
-          prof=ImageOps.fit(prof,(768,768),method=Image.Resampling.LANCZOS,centering=(.5,.42))
-          prof=prof.filter(ImageFilter.UnsharpMask(radius=.7,percent=115,threshold=1))
-          prof.save('prof-caramelo.jpg',quality=96,subsampling=0,optimize=True)
-          print('HQ source',src.size,'launcher',icon.size,'prof',prof.size)
+          prof=ImageOps.fit(src,(512,512),method=Image.Resampling.LANCZOS)
+          prof.save('prof-caramelo.jpg',quality=94,optimize=True)
           PY
       - name: Set Android package id
         run: |
@@ -72,7 +65,7 @@ jobs:
       - name: Configure launcher icons
         run: |
           python3 - <<'PY'
-          from PIL import Image, ImageFilter
+          from PIL import Image
           import os,shutil
           img=Image.open('icon.png').convert('RGBA')
           sizes={'mipmap-mdpi':48,'mipmap-hdpi':72,'mipmap-xhdpi':96,'mipmap-xxhdpi':144,'mipmap-xxxhdpi':192}
@@ -80,7 +73,6 @@ jobs:
               path=f'android/app/src/main/res/{folder}'
               os.makedirs(path,exist_ok=True)
               art=img.resize((size,size),Image.Resampling.LANCZOS)
-              if size>=144: art=art.filter(ImageFilter.UnsharpMask(radius=.45,percent=85,threshold=1))
               art.save(f'{path}/ic_launcher.png',optimize=True)
               art.save(f'{path}/ic_launcher_round.png',optimize=True)
           p='android/app/src/main/res/mipmap-anydpi-v26'
