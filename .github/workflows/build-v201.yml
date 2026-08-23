@@ -1,4 +1,4 @@
-name: Build EstudAI v2.1 APK
+name: Build EstudAI v2.2 APK
 on:
   pull_request:
     branches: [main]
@@ -20,6 +20,8 @@ jobs:
           python3 v20/patch.py
           python3 v20/video_fix.py
           python3 v20/tail_fix.py
+          cat v22/runtime_overrides.js >> app.js
+          cat v22/checklist.css >> styles.css
           node --check app.js
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -51,7 +53,7 @@ jobs:
           import json
           p='capacitor.config.json'
           d=json.load(open(p))
-          d['appId']='com.estudai.v21'
+          d['appId']='com.estudai.v22'
           d['appName']='EstudAI'
           open(p,'w').write(json.dumps(d,ensure_ascii=False,indent=2))
           PY
@@ -85,11 +87,11 @@ jobs:
           chmod +x gradlew
           ./gradlew assembleDebug
       - name: Package APK
-        run: cp android/app/build/outputs/apk/debug/app-debug.apk EstudAI-v2.1.apk
+        run: cp android/app/build/outputs/apk/debug/app-debug.apk EstudAI-v2.2.apk
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: EstudAI-v2.1-APK
-          path: EstudAI-v2.1.apk
+          name: EstudAI-v2.2-APK
+          path: EstudAI-v2.2.apk
           if-no-files-found: error
           retention-days: 30
