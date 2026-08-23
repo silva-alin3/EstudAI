@@ -1,4 +1,4 @@
-name: Build EstudAI v2.0 Stable APK
+name: Build EstudAI v2.0.1 APK
 on:
   pull_request:
     branches: [main]
@@ -28,27 +28,24 @@ jobs:
         with:
           distribution: temurin
           java-version: '21'
-      - name: Prepare EstudAI icon and Prof Caramelo
+      - name: Prepare clean EstudAI icon and Prof Caramelo
         run: |
           python3 -m pip install --quiet pillow
           python3 - <<'PY'
-          from PIL import Image, ImageOps, ImageFilter, ImageEnhance, ImageFile
-          ImageFile.LOAD_TRUNCATED_IMAGES=True
-          src=Image.open('icon.jpg').convert('RGB')
-          # Remove edge/border area and rebuild a clean square launcher asset.
-          w,h=src.size
-          pad=max(0,int(min(w,h)*.015))
-          src=src.crop((pad,pad,w-pad,h-pad))
-          icon=ImageOps.fit(src,(768,768),method=Image.Resampling.LANCZOS,centering=(.5,.48))
-          icon=ImageEnhance.Sharpness(icon).enhance(1.25)
+          from PIL import Image, ImageOps, ImageFilter
+          src=Image.open('v20/icon-clean-source.jpg').convert('RGB')
+          src.load()
+          # Source is already borderless. Rebuild a crisp launcher image without extra masks/borders.
+          icon=ImageOps.fit(src,(1024,1024),method=Image.Resampling.LANCZOS,centering=(.5,.5))
+          icon=icon.filter(ImageFilter.UnsharpMask(radius=1.0,percent=110,threshold=2))
           icon.save('icon.png',optimize=True)
-          # Prof. Caramelo portrait only, without the EstudAI wordmark.
+          # Prof. Caramelo portrait without the EstudAI wordmark.
           w,h=src.size
-          prof=src.crop((int(w*.08),int(h*.03),int(w*.92),int(h*.72)))
-          prof=ImageOps.fit(prof,(512,512),method=Image.Resampling.LANCZOS,centering=(.5,.42))
-          prof=ImageEnhance.Sharpness(prof).enhance(1.2)
-          prof.save('prof-caramelo.jpg',quality=94,optimize=True)
-          print('source',src.size,'launcher',icon.size,'prof',prof.size)
+          prof=src.crop((int(w*.11),int(h*.02),int(w*.89),int(h*.72)))
+          prof=ImageOps.fit(prof,(768,768),method=Image.Resampling.LANCZOS,centering=(.5,.42))
+          prof=prof.filter(ImageFilter.UnsharpMask(radius=1.0,percent=105,threshold=2))
+          prof.save('prof-caramelo.jpg',quality=96,subsampling=0,optimize=True)
+          print('launcher',icon.size,'prof',prof.size)
           PY
       - name: Set Android package id
         run: |
@@ -56,7 +53,7 @@ jobs:
           import json
           p='capacitor.config.json'
           d=json.load(open(p))
-          d['appId']='com.estudai.v20'
+          d['appId']='com.estudai.v201'
           d['appName']='EstudAI'
           open(p,'w').write(json.dumps(d,ensure_ascii=False,indent=2))
           PY
@@ -71,7 +68,7 @@ jobs:
       - name: Configure launcher icons
         run: |
           python3 - <<'PY'
-          from PIL import Image
+          from PIL import Image, ImageFilter
           import os,shutil
           img=Image.open('icon.png').convert('RGBA')
           sizes={'mipmap-mdpi':48,'mipmap-hdpi':72,'mipmap-xhdpi':96,'mipmap-xxhdpi':144,'mipmap-xxxhdpi':192}
@@ -79,8 +76,9 @@ jobs:
               path=f'android/app/src/main/res/{folder}'
               os.makedirs(path,exist_ok=True)
               art=img.resize((size,size),Image.Resampling.LANCZOS)
-              art.save(f'{path}/ic_launcher.png')
-              art.save(f'{path}/ic_launcher_round.png')
+              if size>=144: art=art.filter(ImageFilter.UnsharpMask(radius=.6,percent=90,threshold=2))
+              art.save(f'{path}/ic_launcher.png',optimize=True)
+              art.save(f'{path}/ic_launcher_round.png',optimize=True)
           p='android/app/src/main/res/mipmap-anydpi-v26'
           if os.path.isdir(p): shutil.rmtree(p)
           PY
@@ -90,11 +88,11 @@ jobs:
           chmod +x gradlew
           ./gradlew assembleDebug
       - name: Package APK
-        run: cp android/app/build/outputs/apk/debug/app-debug.apk EstudAI-v2.0.apk
+        run: cp android/app/build/outputs/apk/debug/app-debug.apk EstudAI-v2.0.1.apk
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: EstudAI-v2.0-APK
-          path: EstudAI-v2.0.apk
+          name: EstudAI-v2.0.1-APK
+          path: EstudAI-v2.0.1.apk
           if-no-files-found: error
           retention-days: 30
