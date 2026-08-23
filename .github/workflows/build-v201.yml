@@ -34,20 +34,20 @@ jobs:
           python3 - <<'PY'
           import base64,pathlib,re
           from PIL import Image, ImageOps, ImageFilter
-          raw=pathlib.Path('v20/icon512clean.b64').read_text(encoding='utf-8')
+          raw=pathlib.Path('v20/icon144.b64').read_text(encoding='utf-8')
           clean=''.join(re.findall(r'[A-Za-z0-9+/=]',raw))
           clean += '='*((4-len(clean)%4)%4)
           pathlib.Path('icon-source.jpg').write_bytes(base64.b64decode(clean,validate=False))
           src=Image.open('icon-source.jpg').convert('RGB')
           src.load()
           icon=ImageOps.fit(src,(1024,1024),method=Image.Resampling.LANCZOS,centering=(.5,.5))
-          icon=icon.filter(ImageFilter.UnsharpMask(radius=1.0,percent=110,threshold=2))
+          icon=icon.filter(ImageFilter.UnsharpMask(radius=.8,percent=135,threshold=1))
           icon.save('icon.png',optimize=True)
           w,h=src.size
           prof=src.crop((int(w*.11),int(h*.02),int(w*.89),int(h*.72)))
-          prof=ImageOps.fit(prof,(768,768),method=Image.Resampling.LANCZOS,centering=(.5,.42))
-          prof=prof.filter(ImageFilter.UnsharpMask(radius=1.0,percent=105,threshold=2))
-          prof.save('prof-caramelo.jpg',quality=96,subsampling=0,optimize=True)
+          prof=ImageOps.fit(prof,(512,512),method=Image.Resampling.LANCZOS,centering=(.5,.42))
+          prof=prof.filter(ImageFilter.UnsharpMask(radius=.8,percent=125,threshold=1))
+          prof.save('prof-caramelo.jpg',quality=95,subsampling=0,optimize=True)
           print('verified source',src.size,'launcher',icon.size,'prof',prof.size)
           PY
       - name: Set Android package id
@@ -79,7 +79,7 @@ jobs:
               path=f'android/app/src/main/res/{folder}'
               os.makedirs(path,exist_ok=True)
               art=img.resize((size,size),Image.Resampling.LANCZOS)
-              if size>=144: art=art.filter(ImageFilter.UnsharpMask(radius=.6,percent=90,threshold=2))
+              if size>=144: art=art.filter(ImageFilter.UnsharpMask(radius=.5,percent=100,threshold=1))
               art.save(f'{path}/ic_launcher.png',optimize=True)
               art.save(f'{path}/ic_launcher_round.png',optimize=True)
           p='android/app/src/main/res/mipmap-anydpi-v26'
