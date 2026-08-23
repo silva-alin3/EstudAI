@@ -19,6 +19,7 @@ jobs:
           python3 v20/fix_regex.py
           python3 v20/patch.py
           python3 v20/video_fix.py
+          python3 v20/tail_fix.py
           node --check app.js
       - name: Setup Node.js
         uses: actions/setup-node@v4
