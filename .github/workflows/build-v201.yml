@@ -41,7 +41,7 @@ jobs:
           import base64,pathlib,re,shutil
           from PIL import Image, ImageOps, ImageEnhance, ImageFile
           ImageFile.LOAD_TRUNCATED_IMAGES=True
-          raw=pathlib.Path('v20/icon512clean.b64').read_text(encoding='utf-8')
+          raw=pathlib.Path('icon-hq.b64').read_text(encoding='utf-8')
           clean=''.join(re.findall(r'[A-Za-z0-9+/=]',raw)); clean += '='*((4-len(clean)%4)%4)
           pathlib.Path('icon-source.jpg').write_bytes(base64.b64decode(clean,validate=False))
           src=Image.open('icon-source.jpg').convert('RGB')
