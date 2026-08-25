@@ -1,0 +1,21 @@
+/* EstudAI v2.3 - visual fixes from 177202.mp4 */
+:root{--v23-safe:max(env(safe-area-inset-top),18px)}
+.topbar{padding-top:calc(var(--v23-safe) + 8px)!important;min-height:88px!important}
+.topbar .brand img{width:50px!important;height:50px!important;object-fit:cover!important;border-radius:14px!important;image-rendering:auto!important}
+.prof-head img,.streak-banner img,.prof-fab img,.diag-top img,.diag-done img,.plan-loading img{object-fit:cover!important;image-rendering:auto!important}
+.focus-title{display:flex!important;align-items:flex-end!important;justify-content:space-between!important;gap:10px!important;flex-wrap:nowrap!important}
+.focus-title h2{white-space:nowrap!important;margin:0!important;font-size:clamp(1.55rem,6.8vw,2.05rem)!important;line-height:1!important}
+.focus-title span{font-size:.76rem!important;text-align:right!important;line-height:1.15!important;max-width:38%!important}
+.focus-note{display:flex!important;flex-direction:column!important;gap:5px!important;margin:10px 0 14px!important;padding:12px 14px!important;border-radius:16px!important;background:linear-gradient(120deg,#eef7ff,#effcf4,#fff8d9)!important;border:1px solid #dfe9e5!important}
+.question-card{padding-bottom:118px!important}
+.question-context{font-size:1rem!important;line-height:1.55!important;font-weight:400!important;color:#344054!important}
+.question-command{font-size:1.08rem!important;line-height:1.45!important;font-weight:750!important;margin:18px 0!important;color:#162033!important}
+.question-figure{margin:14px 0!important}
+.question-figure img{width:100%!important;max-height:430px!important;object-fit:contain!important;background:#fff!important;border-radius:14px!important}
+.image-zoom{width:100%!important;border:0!important;background:transparent!important;padding:0!important}
+.quiz-bar{z-index:60!important}
+.prof-panel #profTyping{display:none!important}
+.prof-panel .chat{padding-bottom:18px!important}
+.onboarding{overflow-y:auto!important;padding-bottom:30px!important}
+.onboard-card{margin-top:calc(var(--v23-safe) + 6px)!important}
+.avatar-img{image-rendering:auto!important}
