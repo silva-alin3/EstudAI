@@ -1,11 +1,5 @@
-name: Build EstudAI v2.0 Stable APK
+name: Build EstudAI v2.3 APK
 on:
-  push:
-    branches: [main]
-    paths:
-      - '.github/workflows/build-v201.yml'
-      - 'v20/**'
-      - 'v19/**'
   pull_request:
     branches: [main]
   workflow_dispatch:
@@ -24,6 +18,12 @@ jobs:
           cat v19/css.00.css v19/css.01.css v19/css.02.css > styles.css
           python3 v20/fix_regex.py
           python3 v20/patch.py
+          python3 v20/video_fix.py
+          python3 v20/tail_fix.py
+          cat v22/runtime_overrides.js >> app.js
+          cat v22/checklist.css >> styles.css
+          cat v23/runtime_overrides.js >> app.js
+          cat v23/video_fixes.css >> styles.css
           node --check app.js
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -34,23 +34,31 @@ jobs:
         with:
           distribution: temurin
           java-version: '21'
-      - name: Prepare high resolution app assets
+      - name: Prepare app artwork
         run: |
-          python3 -m pip install --quiet pillow numpy
+          python3 -m pip install --quiet pillow
           python3 - <<'PY'
-          from PIL import Image
-          import numpy as np
-          src=Image.open('icon-source.webp').convert('RGBA').resize((1024,1024),Image.Resampling.LANCZOS)
-          a=np.array(src)
-          h,w=a.shape[:2]
-          yy,xx=np.ogrid[:h,:w]
-          corner=((xx<170)&(yy<170))|((xx>w-170)&(yy<170))|((xx<170)&(yy>h-170))|((xx>w-170)&(yy>h-170))
-          dark=a[:,:,:3].max(axis=2)<32
-          a[corner&dark,3]=0
-          icon=Image.fromarray(a)
+          import base64,pathlib,re,shutil
+          from PIL import Image, ImageOps, ImageEnhance, ImageFile
+          ImageFile.LOAD_TRUNCATED_IMAGES=True
+          raw=pathlib.Path('icon-hq.b64').read_text(encoding='utf-8')
+          clean=''.join(re.findall(r'[A-Za-z0-9+/=]',raw)); clean += '='*((4-len(clean)%4)%4)
+          pathlib.Path('icon-source.jpg').write_bytes(base64.b64decode(clean,validate=False))
+          src=Image.open('icon-source.jpg').convert('RGB')
+          src=ImageEnhance.Sharpness(src).enhance(1.35)
+          icon=ImageOps.fit(src,(1024,1024),method=Image.Resampling.LANCZOS)
           icon.save('icon.png',optimize=True)
-          prof=src.convert('RGB').crop((90,15,934,859)).resize((768,768),Image.Resampling.LANCZOS)
-          prof.save('prof-caramelo.jpg',quality=97,optimize=True)
+          shutil.copyfile('v20/prof-caramelo-final.jpg','prof-caramelo.jpg')
+          PY
+      - name: Set Android package id
+        run: |
+          python3 - <<'PY'
+          import json
+          p='capacitor.config.json'
+          d=json.load(open(p))
+          d['appId']='com.estudai.v23'
+          d['appName']='EstudAI'
+          open(p,'w').write(json.dumps(d,ensure_ascii=False,indent=2))
           PY
       - name: Install dependencies
         run: npm install
@@ -71,8 +79,8 @@ jobs:
               path=f'android/app/src/main/res/{folder}'
               os.makedirs(path,exist_ok=True)
               art=img.resize((size,size),Image.Resampling.LANCZOS)
-              art.save(f'{path}/ic_launcher.png')
-              art.save(f'{path}/ic_launcher_round.png')
+              art.save(f'{path}/ic_launcher.png',optimize=True)
+              art.save(f'{path}/ic_launcher_round.png',optimize=True)
           p='android/app/src/main/res/mipmap-anydpi-v26'
           if os.path.isdir(p): shutil.rmtree(p)
           PY
@@ -82,11 +90,11 @@ jobs:
           chmod +x gradlew
           ./gradlew assembleDebug
       - name: Package APK
-        run: cp android/app/build/outputs/apk/debug/app-debug.apk EstudAI-v2.0.apk
+        run: cp android/app/build/outputs/apk/debug/app-debug.apk EstudAI-v2.3.apk
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: EstudAI-v2.0-APK
-          path: EstudAI-v2.0.apk
+          name: EstudAI-v2.3-APK
+          path: EstudAI-v2.3.apk
           if-no-files-found: error
           retention-days: 30
