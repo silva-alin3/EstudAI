@@ -34,24 +34,17 @@ jobs:
         with:
           distribution: temurin
           java-version: '21'
-      - name: Prepare HQ app artwork
+      - name: Prepare app artwork
         run: |
           python3 -m pip install --quiet pillow
+          cp v20/icon-final.jpg icon-source.jpg
+          cp v20/prof-caramelo-final.jpg prof-caramelo.jpg
           python3 - <<'PY'
-          import base64,pathlib,re
-          from PIL import Image, ImageOps
-          def decode(src,dst):
-              raw=pathlib.Path(src).read_text(encoding='utf-8')
-              clean=''.join(re.findall(r'[A-Za-z0-9+/=]',raw)); clean += '='*((4-len(clean)%4)%4)
-              pathlib.Path(dst).write_bytes(base64.b64decode(clean,validate=False))
-          decode('v22/estudai_icon_hq.b64','icon-source.jpg')
-          decode('v22/prof_caramelo_hq.b64','prof-source.jpg')
-          icon=Image.open('icon-source.jpg').convert('RGB')
-          icon=ImageOps.fit(icon,(1024,1024),method=Image.Resampling.LANCZOS)
+          from PIL import Image, ImageOps, ImageEnhance
+          src=Image.open('icon-source.jpg').convert('RGB')
+          src=ImageEnhance.Sharpness(src).enhance(1.3)
+          icon=ImageOps.fit(src,(1024,1024),method=Image.Resampling.LANCZOS)
           icon.save('icon.png',optimize=True)
-          prof=Image.open('prof-source.jpg').convert('RGB')
-          prof=ImageOps.fit(prof,(768,768),method=Image.Resampling.LANCZOS)
-          prof.save('prof-caramelo.jpg',quality=96,optimize=True)
           PY
       - name: Set Android package id
         run: |
