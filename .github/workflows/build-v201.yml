@@ -1,4 +1,4 @@
-name: Build EstudAI v2.2 APK
+name: Build EstudAI v2.3 APK
 on:
   pull_request:
     branches: [main]
@@ -22,6 +22,8 @@ jobs:
           python3 v20/tail_fix.py
           cat v22/runtime_overrides.js >> app.js
           cat v22/checklist.css >> styles.css
+          cat v23/runtime_overrides.js >> app.js
+          cat v23/video_fixes.css >> styles.css
           node --check app.js
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -32,20 +34,24 @@ jobs:
         with:
           distribution: temurin
           java-version: '21'
-      - name: Prepare temporary app artwork
+      - name: Prepare HQ app artwork
         run: |
           python3 -m pip install --quiet pillow
           python3 - <<'PY'
           import base64,pathlib,re
           from PIL import Image, ImageOps
-          raw=pathlib.Path('v20/icon144.b64').read_text(encoding='utf-8')
-          clean=''.join(re.findall(r'[A-Za-z0-9+/=]',raw)); clean += '='*((4-len(clean)%4)%4)
-          pathlib.Path('icon-source.jpg').write_bytes(base64.b64decode(clean,validate=False))
-          src=Image.open('icon-source.jpg').convert('RGB')
-          icon=ImageOps.fit(src,(1024,1024),method=Image.Resampling.LANCZOS)
+          def decode(src,dst):
+              raw=pathlib.Path(src).read_text(encoding='utf-8')
+              clean=''.join(re.findall(r'[A-Za-z0-9+/=]',raw)); clean += '='*((4-len(clean)%4)%4)
+              pathlib.Path(dst).write_bytes(base64.b64decode(clean,validate=False))
+          decode('v22/estudai_icon_hq.b64','icon-source.jpg')
+          decode('v22/prof_caramelo_hq.b64','prof-source.jpg')
+          icon=Image.open('icon-source.jpg').convert('RGB')
+          icon=ImageOps.fit(icon,(1024,1024),method=Image.Resampling.LANCZOS)
           icon.save('icon.png',optimize=True)
-          prof=ImageOps.fit(src,(512,512),method=Image.Resampling.LANCZOS)
-          prof.save('prof-caramelo.jpg',quality=94,optimize=True)
+          prof=Image.open('prof-source.jpg').convert('RGB')
+          prof=ImageOps.fit(prof,(768,768),method=Image.Resampling.LANCZOS)
+          prof.save('prof-caramelo.jpg',quality=96,optimize=True)
           PY
       - name: Set Android package id
         run: |
@@ -53,7 +59,7 @@ jobs:
           import json
           p='capacitor.config.json'
           d=json.load(open(p))
-          d['appId']='com.estudai.v22'
+          d['appId']='com.estudai.v23'
           d['appName']='EstudAI'
           open(p,'w').write(json.dumps(d,ensure_ascii=False,indent=2))
           PY
@@ -87,11 +93,11 @@ jobs:
           chmod +x gradlew
           ./gradlew assembleDebug
       - name: Package APK
-        run: cp android/app/build/outputs/apk/debug/app-debug.apk EstudAI-v2.2.apk
+        run: cp android/app/build/outputs/apk/debug/app-debug.apk EstudAI-v2.3.apk
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: EstudAI-v2.2-APK
-          path: EstudAI-v2.2.apk
+          name: EstudAI-v2.3-APK
+          path: EstudAI-v2.3.apk
           if-no-files-found: error
           retention-days: 30
